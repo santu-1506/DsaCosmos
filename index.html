@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DSA Cosmos v4 | Analytics Edition</title>
+    <title>DSA Cosmos v4.1 | Pattern Search</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -28,13 +28,16 @@
         .brand { font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 30px; }
         h2, h3 { font-weight: 700; color: var(--text); }
         
-        /* Analytics Bars */
+        /* Analytics Bars (Now Clickable) */
         .mastery-section { margin-top: 30px; border-top: 1px solid var(--border); padding-top: 20px; flex: 1; overflow-y: auto; }
-        .mastery-item { margin-bottom: 12px; }
+        .mastery-item { margin-bottom: 12px; cursor: pointer; padding: 8px; border-radius: 8px; transition: background 0.2s; }
+        .mastery-item:hover { background: rgba(255,255,255,0.05); }
+        .mastery-item.active { background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.2); }
+        
         .mastery-header { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px; color: var(--muted); }
         .progress-track { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
         .progress-fill { height: 100%; background: var(--secondary); border-radius: 3px; transition: width 0.5s ease; }
-        .weak-pattern .progress-fill { background: var(--accent); } /* Red for weak areas */
+        .weak-pattern .progress-fill { background: var(--accent); } 
 
         /* Cards */
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; padding-bottom: 60px; }
@@ -55,25 +58,25 @@
         .input-field { width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 12px; border-radius: 8px; color: white; font-family: inherit; }
         .input-field:focus { border-color: var(--secondary); outline: none; }
         
+        /* Filter Bar */
+        .filter-bar { display: flex; gap: 15px; margin-bottom: 30px; align-items: center; }
+        .search-input { flex: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 12px 16px; border-radius: 8px; color: white; }
+        .pattern-select { width: 200px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 12px; border-radius: 8px; color: white; cursor: pointer; }
+        
         /* Modals */
         .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 50; display: none; place-items: center; }
         .modal-bg.open { display: grid; }
         .modal-box { background: #0f172a; width: 90%; max-width: 800px; max-height: 90vh; border-radius: 16px; border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
         .modal-body { padding: 30px; overflow-y: auto; }
         
-        /* URL Fetcher styling */
         .url-fetcher { display: flex; gap: 10px; margin-bottom: 20px; }
         .fetch-btn { width: auto; background: var(--secondary); white-space: nowrap; }
-
-        /* Code View */
-        pre { background: #0b1120; padding: 20px; border-radius: 8px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: #e2e8f0; }
-        .kwd { color: #c678dd; } .str { color: #98c379; } .typ { color: #e5c07b; } .num { color: #d19a66; } .com { color: #5c6370; }
     </style>
 </head>
 <body>
 
 <aside>
-    <div class="brand">🪐 DSA Cosmos v4</div>
+    <div class="brand">🪐 DSA Cosmos v4.1</div>
     
     <div style="margin-bottom: 20px;">
         <h3 style="font-size: 0.9rem; margin-bottom: 10px; opacity: 0.8;">ACTIONS</h3>
@@ -81,16 +84,36 @@
     </div>
 
     <h3 style="font-size: 0.9rem; opacity: 0.8;">PATTERN MASTERY</h3>
+    <div style="font-size: 0.75rem; color: var(--muted); margin-bottom: 10px;">Click a bar to filter</div>
     <div class="mastery-section" id="mastery-list">
         </div>
 </aside>
 
 <main>
     <div class="content-area">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
             <h2>Problem Library</h2>
-            <input type="text" placeholder="Search..." class="input-field" style="width: 300px;" onkeyup="render(this.value)">
         </div>
+        
+        <div class="filter-bar">
+            <input type="text" id="search-input" class="search-input" placeholder="Search titles, notes..." onkeyup="render()">
+            <select id="pattern-filter" class="pattern-select" onchange="render()">
+                <option value="All">All Patterns</option>
+                <option>Arrays</option>
+                <option>Two Pointers</option>
+                <option>Sliding Window</option>
+                <option>Hashing</option>
+                <option>Prefix Sum</option>
+                <option>Strings</option>
+                <option>Greedy</option>
+                <option>Binary Search</option>
+                <option>Fast & Slow</option>
+                <option>Stack</option>
+                <option>DFS / BFS</option>
+                <option>Dynamic Programming</option>
+            </select>
+        </div>
+
         <div class="grid" id="grid">
             </div>
     </div>
@@ -102,7 +125,7 @@
             <h2 style="margin-bottom: 20px;">Add New Problem</h2>
             
             <div class="url-fetcher">
-                <input type="text" id="lc-url" class="input-field" placeholder="Paste LeetCode URL to auto-fill (e.g. https://leetcode.com/problems/two-sum/)">
+                <input type="text" id="lc-url" class="input-field" placeholder="Paste LeetCode URL to auto-fill">
                 <button class="btn fetch-btn" onclick="parseUrl()">Auto-Fill</button>
             </div>
 
@@ -130,7 +153,7 @@
                         <option>Arrays</option><option>Two Pointers</option><option>Sliding Window</option>
                         <option>Hashing</option><option>Prefix Sum</option><option>Strings</option>
                         <option>Greedy</option><option>Binary Search</option><option>Fast & Slow</option>
-                        <option>Linked List</option><option>Stack</option><option>DFS / BFS</option>
+                        <option>Stack</option><option>DFS / BFS</option><option>Dynamic Programming</option>
                     </select>
                 </div>
                 <div class="input-group">
@@ -152,21 +175,36 @@
 
 <script>
     let db = JSON.parse(localStorage.getItem('dsaCosmosV3')) || [];
+    let currentPatternFilter = 'All';
 
-    // --- 1. RENDER LOGIC & ANALYTICS ---
-    function render(search = '') {
+    // --- 1. RENDER LOGIC ---
+    function render() {
+        const searchText = document.getElementById('search-input').value.toLowerCase();
+        // Sync Dropdown with variable if changed via UI
+        const dropdownVal = document.getElementById('pattern-filter').value;
+        if(dropdownVal !== currentPatternFilter && document.activeElement.id === 'pattern-filter') {
+            currentPatternFilter = dropdownVal;
+        }
+
         const grid = document.getElementById('grid');
         grid.innerHTML = '';
         
-        const filtered = db.filter(p => 
-            p.title.toLowerCase().includes(search.toLowerCase()) || 
-            p.pattern.toLowerCase().includes(search.toLowerCase())
-        );
+        // Filter Logic: Match Text AND Match Pattern
+        const filtered = db.filter(p => {
+            const matchesText = p.title.toLowerCase().includes(searchText) || 
+                                p.note.toLowerCase().includes(searchText);
+            const matchesPattern = currentPatternFilter === 'All' || p.pattern === currentPatternFilter;
+            return matchesText && matchesPattern;
+        });
+
+        if(filtered.length === 0) {
+            grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--muted);">No problems found.</div>`;
+        }
 
         filtered.forEach(p => {
             const card = document.createElement('div');
             card.className = 'card';
-            card.onclick = () => alert(`Viewing Code for: ${p.title}\n\n${p.note}`); // Simplified for brevity
+            card.onclick = () => alert(`Viewing Code for: ${p.title}\n\n${p.note}\n\n${p.code.substring(0, 100)}...`);
             card.innerHTML = `
                 <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                     <span style="opacity:0.6; font-size:0.9rem;">#${p.id}</span>
@@ -180,8 +218,12 @@
         });
 
         renderAnalytics();
+        
+        // Sync UI dropdown if filter changed via Sidebar
+        document.getElementById('pattern-filter').value = currentPatternFilter;
     }
 
+    // --- 2. ANALYTICS & SIDEBAR FILTER ---
     function renderAnalytics() {
         const counts = {};
         db.forEach(p => counts[p.pattern] = (counts[p.pattern] || 0) + 1);
@@ -189,13 +231,19 @@
         const list = document.getElementById('mastery-list');
         list.innerHTML = '';
         
-        // Convert to array and sort by count (descending)
         Object.entries(counts).sort((a,b) => b[1] - a[1]).forEach(([pattern, count]) => {
-            const percentage = Math.min((count / 10) * 100, 100); // Goal: 10 problems per pattern
+            const percentage = Math.min((count / 10) * 100, 100);
             const isWeak = count < 3;
+            const isActive = pattern === currentPatternFilter;
             
             const item = document.createElement('div');
-            item.className = `mastery-item ${isWeak ? 'weak-pattern' : ''}`;
+            item.className = `mastery-item ${isWeak ? 'weak-pattern' : ''} ${isActive ? 'active' : ''}`;
+            // ADDED CLICK HANDLER
+            item.onclick = () => {
+                currentPatternFilter = (currentPatternFilter === pattern) ? 'All' : pattern;
+                render();
+            };
+            
             item.innerHTML = `
                 <div class="mastery-header">
                     <span>${pattern}</span>
@@ -209,31 +257,21 @@
         });
     }
 
-    // --- 2. SMART URL PARSER ---
+    // --- 3. URL PARSER & UTILS ---
     function parseUrl() {
         const url = document.getElementById('lc-url').value;
-        // Regex to extract slug: leetcode.com/problems/container-with-most-water/ -> container-with-most-water
         const match = url.match(/problems\/([^\/]+)\/?/);
-        
         if (match && match[1]) {
-            const slug = match[1];
-            // Convert slug to Title Case: "container-with-most-water" -> "Container With Most Water"
-            const title = slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-            
+            const title = match[1].split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
             document.getElementById('in-title').value = title;
-            // Mock Difficulty (Randomly picked for now as we can't fetch without backend)
             document.getElementById('in-diff').value = "Medium"; 
-            
-            // Mock ID (Generate a temporary hash ID if real one unknown)
             document.getElementById('in-num').value = Math.floor(Math.random() * 2000) + 1;
-            
-            alert(`✅ Extracted: "${title}"\n(Difficulty set to Medium default)`);
+            alert(`✅ Extracted: "${title}"`);
         } else {
             alert("Invalid LeetCode URL");
         }
     }
 
-    // --- 3. FORM HANDLING ---
     function openAddModal() { document.getElementById('modal-add').classList.add('open'); }
     function closeModal() { document.getElementById('modal-add').classList.remove('open'); }
 
@@ -247,11 +285,8 @@
             note: document.getElementById('in-note').value,
             code: document.getElementById('in-code').value
         };
-
-        // Remove old if exists (overwrite)
         db = db.filter(p => p.id !== newP.id);
         db.push(newP);
-        
         localStorage.setItem('dsaCosmosV3', JSON.stringify(db));
         closeModal();
         render();
