@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DSA Cosmos v4.1 | Pattern Search</title>
+    <title>DSA Cosmos v5 | Ultimate Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -24,16 +24,15 @@
         main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
         .content-area { flex: 1; padding: 40px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
 
-        /* Typography */
+        /* Typography & Brand */
         .brand { font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 30px; }
         h2, h3 { font-weight: 700; color: var(--text); }
         
-        /* Analytics Bars (Now Clickable) */
+        /* Analytics Bars */
         .mastery-section { margin-top: 30px; border-top: 1px solid var(--border); padding-top: 20px; flex: 1; overflow-y: auto; }
         .mastery-item { margin-bottom: 12px; cursor: pointer; padding: 8px; border-radius: 8px; transition: background 0.2s; }
         .mastery-item:hover { background: rgba(255,255,255,0.05); }
         .mastery-item.active { background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.2); }
-        
         .mastery-header { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px; color: var(--muted); }
         .progress-track { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
         .progress-fill { height: 100%; background: var(--secondary); border-radius: 3px; transition: width 0.5s ease; }
@@ -63,12 +62,24 @@
         .search-input { flex: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 12px 16px; border-radius: 8px; color: white; }
         .pattern-select { width: 200px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 12px; border-radius: 8px; color: white; cursor: pointer; }
         
-        /* Modals */
+        /* Modals (The Fix!) */
         .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 50; display: none; place-items: center; }
         .modal-bg.open { display: grid; }
-        .modal-box { background: #0f172a; width: 90%; max-width: 800px; max-height: 90vh; border-radius: 16px; border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
-        .modal-body { padding: 30px; overflow-y: auto; }
+        .modal-box { background: #0f172a; width: 90%; max-width: 900px; max-height: 90vh; border-radius: 16px; border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); }
+        .modal-header { padding: 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: rgba(15, 23, 42, 0.9); }
+        .modal-body { padding: 30px; overflow-y: auto; flex: 1; }
         
+        /* Code View */
+        .code-view { background: #0b1120; padding: 25px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: #e2e8f0; overflow: auto; white-space: pre; line-height: 1.6; }
+        
+        /* Safe Syntax Highlight Colors */
+        .kwd { color: #c678dd; font-weight: bold; } 
+        .typ { color: #e5c07b; } 
+        .str { color: #98c379; } 
+        .fun { color: #61afef; } 
+        .com { color: #5c6370; font-style: italic; } 
+        .num { color: #d19a66; }
+
         .url-fetcher { display: flex; gap: 10px; margin-bottom: 20px; }
         .fetch-btn { width: auto; background: var(--secondary); white-space: nowrap; }
     </style>
@@ -76,7 +87,7 @@
 <body>
 
 <aside>
-    <div class="brand">🪐 DSA Cosmos v4.1</div>
+    <div class="brand">🪐 DSA Cosmos v5</div>
     
     <div style="margin-bottom: 20px;">
         <h3 style="font-size: 0.9rem; margin-bottom: 10px; opacity: 0.8;">ACTIONS</h3>
@@ -85,50 +96,59 @@
 
     <h3 style="font-size: 0.9rem; opacity: 0.8;">PATTERN MASTERY</h3>
     <div style="font-size: 0.75rem; color: var(--muted); margin-bottom: 10px;">Click a bar to filter</div>
-    <div class="mastery-section" id="mastery-list">
-        </div>
+    <div class="mastery-section" id="mastery-list"></div>
 </aside>
 
 <main>
     <div class="content-area">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h2>Problem Library</h2>
-        </div>
-        
         <div class="filter-bar">
             <input type="text" id="search-input" class="search-input" placeholder="Search titles, notes..." onkeyup="render()">
             <select id="pattern-filter" class="pattern-select" onchange="render()">
                 <option value="All">All Patterns</option>
-                <option>Arrays</option>
-                <option>Two Pointers</option>
-                <option>Sliding Window</option>
-                <option>Hashing</option>
-                <option>Prefix Sum</option>
-                <option>Strings</option>
-                <option>Greedy</option>
-                <option>Binary Search</option>
-                <option>Fast & Slow</option>
-                <option>Stack</option>
-                <option>DFS / BFS</option>
-                <option>Dynamic Programming</option>
+                <option>Arrays</option><option>Two Pointers</option><option>Sliding Window</option>
+                <option>Hashing</option><option>Prefix Sum</option><option>Strings</option>
+                <option>Greedy</option><option>Binary Search</option><option>Fast & Slow</option>
+                <option>Stack</option><option>DFS / BFS</option><option>Dynamic Programming</option>
             </select>
         </div>
-
-        <div class="grid" id="grid">
-            </div>
+        <div class="grid" id="grid"></div>
     </div>
 </main>
 
-<div class="modal-bg" id="modal-add">
+<div class="modal-bg" id="modal-view">
     <div class="modal-box">
+        <div class="modal-header">
+            <div>
+                <h2 id="v-title" style="font-size: 1.4rem;">Title</h2>
+                <div style="margin-top: 8px; display: flex; gap: 10px;">
+                    <span id="v-badge" class="badge">EASY</span>
+                    <span id="v-pattern" style="color: var(--secondary); font-size: 0.8rem; font-weight: 600; padding-top:2px;">Pattern</span>
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn" style="width: auto; padding: 8px 16px; background: rgba(255,255,255,0.1);" onclick="openEditFromView()">Edit</button>
+                <button onclick="closeModal('view')" style="background:none; border:none; color:white; font-size: 1.5rem; cursor:pointer;">&times;</button>
+            </div>
+        </div>
         <div class="modal-body">
-            <h2 style="margin-bottom: 20px;">Add New Problem</h2>
-            
+            <div style="padding: 20px; background: rgba(139, 92, 246, 0.1); border-left: 4px solid var(--primary); border-radius: 4px; margin-bottom: 20px;">
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--primary); margin-bottom: 5px; font-weight: 800;">Strategy Note</div>
+                <div id="v-note" style="color: #e2e8f0; line-height: 1.5;"></div>
+            </div>
+            <div class="code-view" id="v-code"></div>
+            <div id="v-id" style="display:none;"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-bg" id="modal-add">
+    <div class="modal-box" style="height: auto; max-height: 95vh;">
+        <div class="modal-body">
+            <h2 style="margin-bottom: 20px;" id="form-header">Add New Problem</h2>
             <div class="url-fetcher">
                 <input type="text" id="lc-url" class="input-field" placeholder="Paste LeetCode URL to auto-fill">
                 <button class="btn fetch-btn" onclick="parseUrl()">Auto-Fill</button>
             </div>
-
             <form id="addForm">
                 <input type="hidden" id="in-id">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
@@ -166,7 +186,7 @@
                 </div>
                 <div style="display:flex; gap:10px;">
                     <button type="submit" class="btn">Save Problem</button>
-                    <button type="button" class="btn" style="background:transparent; border:1px solid var(--border);" onclick="closeModal()">Cancel</button>
+                    <button type="button" class="btn" style="background:transparent; border:1px solid var(--border);" onclick="closeModal('add')">Cancel</button>
                 </div>
             </form>
         </div>
@@ -177,10 +197,9 @@
     let db = JSON.parse(localStorage.getItem('dsaCosmosV3')) || [];
     let currentPatternFilter = 'All';
 
-    // --- 1. RENDER LOGIC ---
+    // --- RENDER LOGIC ---
     function render() {
         const searchText = document.getElementById('search-input').value.toLowerCase();
-        // Sync Dropdown with variable if changed via UI
         const dropdownVal = document.getElementById('pattern-filter').value;
         if(dropdownVal !== currentPatternFilter && document.activeElement.id === 'pattern-filter') {
             currentPatternFilter = dropdownVal;
@@ -189,22 +208,17 @@
         const grid = document.getElementById('grid');
         grid.innerHTML = '';
         
-        // Filter Logic: Match Text AND Match Pattern
         const filtered = db.filter(p => {
-            const matchesText = p.title.toLowerCase().includes(searchText) || 
-                                p.note.toLowerCase().includes(searchText);
+            const matchesText = p.title.toLowerCase().includes(searchText) || p.note.toLowerCase().includes(searchText);
             const matchesPattern = currentPatternFilter === 'All' || p.pattern === currentPatternFilter;
             return matchesText && matchesPattern;
         });
 
-        if(filtered.length === 0) {
-            grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--muted);">No problems found.</div>`;
-        }
-
         filtered.forEach(p => {
             const card = document.createElement('div');
             card.className = 'card';
-            card.onclick = () => alert(`Viewing Code for: ${p.title}\n\n${p.note}\n\n${p.code.substring(0, 100)}...`);
+            // FIX: Use openView() instead of alert()
+            card.onclick = () => openView(p.id);
             card.innerHTML = `
                 <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                     <span style="opacity:0.6; font-size:0.9rem;">#${p.id}</span>
@@ -216,48 +230,107 @@
             `;
             grid.appendChild(card);
         });
-
-        renderAnalytics();
         
-        // Sync UI dropdown if filter changed via Sidebar
         document.getElementById('pattern-filter').value = currentPatternFilter;
+        renderAnalytics();
     }
 
-    // --- 2. ANALYTICS & SIDEBAR FILTER ---
     function renderAnalytics() {
         const counts = {};
         db.forEach(p => counts[p.pattern] = (counts[p.pattern] || 0) + 1);
-        
         const list = document.getElementById('mastery-list');
         list.innerHTML = '';
         
         Object.entries(counts).sort((a,b) => b[1] - a[1]).forEach(([pattern, count]) => {
             const percentage = Math.min((count / 10) * 100, 100);
-            const isWeak = count < 3;
             const isActive = pattern === currentPatternFilter;
             
             const item = document.createElement('div');
-            item.className = `mastery-item ${isWeak ? 'weak-pattern' : ''} ${isActive ? 'active' : ''}`;
-            // ADDED CLICK HANDLER
+            item.className = `mastery-item ${isActive ? 'active' : ''}`;
             item.onclick = () => {
                 currentPatternFilter = (currentPatternFilter === pattern) ? 'All' : pattern;
                 render();
             };
-            
             item.innerHTML = `
-                <div class="mastery-header">
-                    <span>${pattern}</span>
-                    <span>${count} solved</span>
-                </div>
-                <div class="progress-track">
-                    <div class="progress-fill" style="width: ${percentage}%"></div>
-                </div>
+                <div class="mastery-header"><span>${pattern}</span><span>${count}</span></div>
+                <div class="progress-track"><div class="progress-fill" style="width: ${percentage}%"></div></div>
             `;
             list.appendChild(item);
         });
     }
 
-    // --- 3. URL PARSER & UTILS ---
+    // --- ROBUST SYNTAX HIGHLIGHTER (Fixes the "kwd" bug) ---
+    function highlightCode(code) {
+        if(!code) return "";
+        // 1. Escape HTML entities FIRST to prevent tag collision
+        code = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+        // 2. Tokenize Strings & Comments to hide them from keyword regex
+        const strings = [];
+        const comments = [];
+        
+        code = code.replace(/("[^"]*")/g, (m) => { strings.push(m); return `___STR${strings.length-1}___`; });
+        code = code.replace(/(\/\/.*$)/gm, (m) => { comments.push(m); return `___COM${comments.length-1}___`; });
+
+        // 3. Highlight Keywords
+        code = code.replace(/\b(public|class|static|void|int|boolean|if|else|while|for|return|new|break|continue)\b/g, '<span class="kwd">$1</span>');
+        code = code.replace(/\b(String|Math|Integer|Character|HashSet|HashMap|Map|Set|List|ArrayList|Arrays)\b/g, '<span class="typ">$1</span>');
+        code = code.replace(/\b(\d+)\b/g, '<span class="num">$1</span>');
+        code = code.replace(/\b([a-zA-Z0-9_]+)(?=\()/g, '<span class="fun">$1</span>');
+
+        // 4. Restore Strings & Comments
+        code = code.replace(/___STR(\d+)___/g, (m, i) => `<span class="str">${strings[i]}</span>`);
+        code = code.replace(/___COM(\d+)___/g, (m, i) => `<span class="com">${comments[i]}</span>`);
+
+        return code;
+    }
+
+    // --- MODAL & FORM LOGIC ---
+    function openView(id) {
+        const p = db.find(x => x.id === id);
+        if(!p) return;
+        document.getElementById('v-title').innerText = p.title;
+        document.getElementById('v-badge').innerText = p.diff;
+        document.getElementById('v-badge').className = `badge badge-${p.diff}`;
+        document.getElementById('v-pattern').innerText = p.pattern;
+        document.getElementById('v-note').innerText = p.note;
+        document.getElementById('v-code').innerHTML = highlightCode(p.code);
+        document.getElementById('v-id').innerText = p.id;
+        document.getElementById('modal-view').classList.add('open');
+    }
+
+    function openEditFromView() {
+        const id = parseInt(document.getElementById('v-id').innerText);
+        closeModal('view');
+        openAddModal(id);
+    }
+
+    function openAddModal(editId = null) {
+        const modal = document.getElementById('modal-add');
+        const form = document.getElementById('addForm');
+        
+        if (editId && typeof editId === 'number') {
+            const p = db.find(x => x.id === editId);
+            document.getElementById('form-header').innerText = "Edit Problem";
+            document.getElementById('in-num').value = p.id;
+            document.getElementById('in-title').value = p.title;
+            document.getElementById('in-pattern').value = p.pattern;
+            document.getElementById('in-diff').value = p.diff;
+            document.getElementById('in-note').value = p.note;
+            document.getElementById('in-code').value = p.code;
+            // Lock ID editing for simplicity
+            document.getElementById('in-num').disabled = true;
+        } else {
+            document.getElementById('form-header').innerText = "Add New Problem";
+            form.reset();
+            document.getElementById('in-num').disabled = false;
+        }
+        modal.classList.add('open');
+    }
+
+    function closeModal(type) { document.getElementById(`modal-${type}`).classList.remove('open'); }
+
+    // --- URL PARSER ---
     function parseUrl() {
         const url = document.getElementById('lc-url').value;
         const match = url.match(/problems\/([^\/]+)\/?/);
@@ -266,14 +339,10 @@
             document.getElementById('in-title').value = title;
             document.getElementById('in-diff').value = "Medium"; 
             document.getElementById('in-num').value = Math.floor(Math.random() * 2000) + 1;
-            alert(`✅ Extracted: "${title}"`);
         } else {
-            alert("Invalid LeetCode URL");
+            alert("Invalid URL");
         }
     }
-
-    function openAddModal() { document.getElementById('modal-add').classList.add('open'); }
-    function closeModal() { document.getElementById('modal-add').classList.remove('open'); }
 
     document.getElementById('addForm').onsubmit = (e) => {
         e.preventDefault();
@@ -285,14 +354,19 @@
             note: document.getElementById('in-note').value,
             code: document.getElementById('in-code').value
         };
-        db = db.filter(p => p.id !== newP.id);
-        db.push(newP);
+        // Update or Add
+        const existingIdx = db.findIndex(p => p.id === newP.id);
+        if(existingIdx >= 0) db[existingIdx] = newP;
+        else db.push(newP);
+        
         localStorage.setItem('dsaCosmosV3', JSON.stringify(db));
-        closeModal();
+        closeModal('add');
         render();
+        // Re-open view if editing
+        if(document.getElementById('form-header').innerText.includes("Edit")) openView(newP.id);
     };
 
-    render(); // Init
+    render();
 </script>
 </body>
 </html>
