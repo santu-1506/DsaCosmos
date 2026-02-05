@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DSA Cosmos v5 | Ultimate Edition</title>
+    <title>DSA Cosmos v6 | Professional Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -42,7 +42,7 @@
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; padding-bottom: 60px; }
         .card {
             background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 24px;
-            cursor: pointer; transition: all 0.2s; position: relative;
+            cursor: pointer; transition: all 0.2s; position: relative; display: flex; flex-direction: column;
         }
         .card:hover { transform: translateY(-4px); border-color: var(--primary); background: rgba(31, 41, 55, 0.6); }
         .badge { font-size: 0.7rem; padding: 3px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase; }
@@ -53,6 +53,9 @@
         /* Forms & Inputs */
         .btn { background: var(--primary); border: none; padding: 12px; border-radius: 8px; color: white; font-weight: 700; cursor: pointer; width: 100%; transition: 0.2s; }
         .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+        .btn-outline:hover { border-color: var(--text); color: var(--text); }
+        
         .input-group { margin-bottom: 15px; }
         .input-field { width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 12px; border-radius: 8px; color: white; font-family: inherit; }
         .input-field:focus { border-color: var(--secondary); outline: none; }
@@ -62,7 +65,7 @@
         .search-input { flex: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 12px 16px; border-radius: 8px; color: white; }
         .pattern-select { width: 200px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 12px; border-radius: 8px; color: white; cursor: pointer; }
         
-        /* Modals (The Fix!) */
+        /* Modals */
         .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 50; display: none; place-items: center; }
         .modal-bg.open { display: grid; }
         .modal-box { background: #0f172a; width: 90%; max-width: 900px; max-height: 90vh; border-radius: 16px; border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); }
@@ -71,14 +74,7 @@
         
         /* Code View */
         .code-view { background: #0b1120; padding: 25px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: #e2e8f0; overflow: auto; white-space: pre; line-height: 1.6; }
-        
-        /* Safe Syntax Highlight Colors */
-        .kwd { color: #c678dd; font-weight: bold; } 
-        .typ { color: #e5c07b; } 
-        .str { color: #98c379; } 
-        .fun { color: #61afef; } 
-        .com { color: #5c6370; font-style: italic; } 
-        .num { color: #d19a66; }
+        .kwd { color: #c678dd; font-weight: bold; } .typ { color: #e5c07b; } .str { color: #98c379; } .fun { color: #61afef; } .com { color: #5c6370; font-style: italic; } .num { color: #d19a66; }
 
         .url-fetcher { display: flex; gap: 10px; margin-bottom: 20px; }
         .fetch-btn { width: auto; background: var(--secondary); white-space: nowrap; }
@@ -87,7 +83,7 @@
 <body>
 
 <aside>
-    <div class="brand">🪐 DSA Cosmos v5</div>
+    <div class="brand">🪐 DSA Cosmos v6</div>
     
     <div style="margin-bottom: 20px;">
         <h3 style="font-size: 0.9rem; margin-bottom: 10px; opacity: 0.8;">ACTIONS</h3>
@@ -97,6 +93,10 @@
     <h3 style="font-size: 0.9rem; opacity: 0.8;">PATTERN MASTERY</h3>
     <div style="font-size: 0.75rem; color: var(--muted); margin-bottom: 10px;">Click a bar to filter</div>
     <div class="mastery-section" id="mastery-list"></div>
+    
+    <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border);">
+        <button class="btn btn-outline" style="width: 100%; font-size: 0.8rem;" onclick="resetDatabase()">⚡ Reset / Upgrade DB</button>
+    </div>
 </aside>
 
 <main>
@@ -108,7 +108,7 @@
                 <option>Arrays</option><option>Two Pointers</option><option>Sliding Window</option>
                 <option>Hashing</option><option>Prefix Sum</option><option>Strings</option>
                 <option>Greedy</option><option>Binary Search</option><option>Fast & Slow</option>
-                <option>Stack</option><option>DFS / BFS</option><option>Dynamic Programming</option>
+                <option>Stack</option><option>DFS / BFS</option><option>Graphs</option>
             </select>
         </div>
         <div class="grid" id="grid"></div>
@@ -133,7 +133,7 @@
         <div class="modal-body">
             <div style="padding: 20px; background: rgba(139, 92, 246, 0.1); border-left: 4px solid var(--primary); border-radius: 4px; margin-bottom: 20px;">
                 <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--primary); margin-bottom: 5px; font-weight: 800;">Strategy Note</div>
-                <div id="v-note" style="color: #e2e8f0; line-height: 1.5;"></div>
+                <div id="v-note" style="color: #e2e8f0; line-height: 1.5; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem;"></div>
             </div>
             <div class="code-view" id="v-code"></div>
             <div id="v-id" style="display:none;"></div>
@@ -173,12 +173,12 @@
                         <option>Arrays</option><option>Two Pointers</option><option>Sliding Window</option>
                         <option>Hashing</option><option>Prefix Sum</option><option>Strings</option>
                         <option>Greedy</option><option>Binary Search</option><option>Fast & Slow</option>
-                        <option>Stack</option><option>DFS / BFS</option><option>Dynamic Programming</option>
+                        <option>Stack</option><option>DFS / BFS</option><option>Graphs</option>
                     </select>
                 </div>
                 <div class="input-group">
-                    <label style="font-size:0.8rem; margin-bottom:5px; display:block;">Strategy Note</label>
-                    <input type="text" id="in-note" class="input-field" placeholder="1-sentence logic summary..." required>
+                    <label style="font-size:0.8rem; margin-bottom:5px; display:block;">Strategy Note (Professional)</label>
+                    <input type="text" id="in-note" class="input-field" placeholder="e.g. Map<Val, Idx> to find complement. Time O(N), Space O(N)." required>
                 </div>
                 <div class="input-group">
                     <label style="font-size:0.8rem; margin-bottom:5px; display:block;">Java Code</label>
@@ -194,8 +194,35 @@
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('dsaCosmosV3')) || [];
+    // --- 0. PROFESSIONAL DATASET ---
+    const professionalData = [
+        { id: 167, title: "Two Sum II", diff: "Medium", pattern: "Two Pointers", note: "Sorted array collision: L=0, R=n-1. Sum < target → L++; Sum > target → R--.", code: "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        int l = 0, r = nums.length - 1;\n        while (l < r) {\n            int sum = nums[l] + nums[r];\n            if (sum == target) return new int[]{l + 1, r + 1};\n            if (sum < target) l++; else r--;\n        }\n        return new int[]{};\n    }\n}" },
+        { id: 344, title: "Reverse String", diff: "Easy", pattern: "Two Pointers", note: "In-place swap of s[i] and s[n-1-i] moving inward. Time O(N), Space O(1).", code: "class Solution {\n    public void reverseString(char[] s) {\n        int l = 0, r = s.length - 1;\n        while (l < r) {\n            char tmp = s[l]; s[l++] = s[r]; s[r--] = tmp;\n        }\n    }\n}" },
+        { id: 125, title: "Valid Palindrome", diff: "Easy", pattern: "Two Pointers", note: "Bidirectional scan skipping non-alphanumeric chars. Compare case-insensitive.", code: "" },
+        { id: 1, title: "Two Sum", diff: "Easy", pattern: "Hashing", note: "Hash Map <Value, Index>. Check existence of (Target - Current). Time O(N), Space O(N).", code: "" },
+        { id: 997, title: "Find the Town Judge", diff: "Easy", pattern: "Graphs", note: "Compute net trust score (in-degree - out-degree). The judge is the unique node where score == N - 1.", code: "class Solution {\n    public int findJudge(int n, int[][] trust) {\n        int[] count = new int[n + 1];\n        for (int[] t : trust) {\n            count[t[0]]--;\n            count[t[1]]++;\n        }\n        for (int i = 1; i <= n; i++) {\n            if (count[i] == n - 1) return i;\n        }\n        return -1;\n    }\n}" },
+        { id: 217, title: "Contains Duplicate", diff: "Easy", pattern: "Hashing", note: "Set cardinality check. If add() returns false, element exists.", code: "" },
+        { id: 53, title: "Maximum Subarray", diff: "Medium", pattern: "Greedy", note: "Kadane's Algorithm: Reset running sum to 0 if negative. Track max sum found.", code: "" },
+        { id: 283, title: "Move Zeroes", diff: "Easy", pattern: "Two Pointers", note: "Snowball partitioning: 'k' tracks boundary of non-zero elements. Swap current to k.", code: "" },
+        { id: 11, title: "Container With Most Water", diff: "Medium", pattern: "Two Pointers", note: "Greedy shrinkage: Area limited by shorter line. Move shorter pointer inward to seek height.", code: "" },
+        { id: 977, title: "Squares of Sorted Array", diff: "Easy", pattern: "Two Pointers", note: "Merge step logic: Compare abs(L) vs abs(R). Fill result array from end (n-1 to 0).", code: "" },
+        { id: 1480, title: "Running Sum of 1D Array", diff: "Easy", pattern: "Prefix Sum", note: "In-place accumulation: nums[i] += nums[i-1]. Time O(N), Space O(1).", code: "" },
+        { id: 242, title: "Valid Anagram", diff: "Easy", pattern: "Hashing", note: "Frequency array int[26]. Increment for s, decrement for t. Assert all zero.", code: "" },
+        { id: 121, title: "Best Time to Buy and Sell Stock", diff: "Easy", pattern: "Greedy", note: "Single pass. Track local minimum price and calculate max potential profit (price - min).", code: "" },
+        { id: 75, title: "Sort Colors", diff: "Medium", pattern: "Two Pointers", note: "Dutch National Flag (3-way partition). Low=0, Mid=1, High=2. Swap Mid based on value.", code: "" }
+    ];
+
+    let db = JSON.parse(localStorage.getItem('dsaCosmosV6')) || professionalData;
     let currentPatternFilter = 'All';
+
+    // --- RESET FUNCTION ---
+    function resetDatabase() {
+        if(confirm("⚠ This will overwrite your existing notes with the Professional Edition defaults. Continue?")) {
+            db = professionalData;
+            localStorage.setItem('dsaCosmosV6', JSON.stringify(db));
+            location.reload();
+        }
+    }
 
     // --- RENDER LOGIC ---
     function render() {
@@ -217,7 +244,6 @@
         filtered.forEach(p => {
             const card = document.createElement('div');
             card.className = 'card';
-            // FIX: Use openView() instead of alert()
             card.onclick = () => openView(p.id);
             card.innerHTML = `
                 <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
@@ -226,7 +252,7 @@
                 </div>
                 <h3>${p.title}</h3>
                 <div style="margin-top:10px; font-size:0.8rem; color:var(--secondary); font-weight:700;">${p.pattern}</div>
-                <p style="margin-top:8px; font-size:0.85rem; color:var(--muted); line-height:1.4;">${p.note}</p>
+                <p style="margin-top:auto; padding-top:10px; font-size:0.85rem; color:var(--muted); line-height:1.4; border-top:1px solid rgba(255,255,255,0.05);">${p.note}</p>
             `;
             grid.appendChild(card);
         });
@@ -259,33 +285,27 @@
         });
     }
 
-    // --- ROBUST SYNTAX HIGHLIGHTER (Fixes the "kwd" bug) ---
+    // --- SYNTAX HIGHLIGHTER ---
     function highlightCode(code) {
-        if(!code) return "";
-        // 1. Escape HTML entities FIRST to prevent tag collision
+        if(!code) return "// No code provided yet.";
         code = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
-        // 2. Tokenize Strings & Comments to hide them from keyword regex
-        const strings = [];
-        const comments = [];
         
+        const strings = []; const comments = [];
         code = code.replace(/("[^"]*")/g, (m) => { strings.push(m); return `___STR${strings.length-1}___`; });
         code = code.replace(/(\/\/.*$)/gm, (m) => { comments.push(m); return `___COM${comments.length-1}___`; });
 
-        // 3. Highlight Keywords
         code = code.replace(/\b(public|class|static|void|int|boolean|if|else|while|for|return|new|break|continue)\b/g, '<span class="kwd">$1</span>');
         code = code.replace(/\b(String|Math|Integer|Character|HashSet|HashMap|Map|Set|List|ArrayList|Arrays)\b/g, '<span class="typ">$1</span>');
         code = code.replace(/\b(\d+)\b/g, '<span class="num">$1</span>');
         code = code.replace(/\b([a-zA-Z0-9_]+)(?=\()/g, '<span class="fun">$1</span>');
 
-        // 4. Restore Strings & Comments
         code = code.replace(/___STR(\d+)___/g, (m, i) => `<span class="str">${strings[i]}</span>`);
         code = code.replace(/___COM(\d+)___/g, (m, i) => `<span class="com">${comments[i]}</span>`);
 
         return code;
     }
 
-    // --- MODAL & FORM LOGIC ---
+    // --- MODAL & FORM ---
     function openView(id) {
         const p = db.find(x => x.id === id);
         if(!p) return;
@@ -318,7 +338,6 @@
             document.getElementById('in-diff').value = p.diff;
             document.getElementById('in-note').value = p.note;
             document.getElementById('in-code').value = p.code;
-            // Lock ID editing for simplicity
             document.getElementById('in-num').disabled = true;
         } else {
             document.getElementById('form-header').innerText = "Add New Problem";
@@ -354,15 +373,13 @@
             note: document.getElementById('in-note').value,
             code: document.getElementById('in-code').value
         };
-        // Update or Add
         const existingIdx = db.findIndex(p => p.id === newP.id);
         if(existingIdx >= 0) db[existingIdx] = newP;
         else db.push(newP);
         
-        localStorage.setItem('dsaCosmosV3', JSON.stringify(db));
+        localStorage.setItem('dsaCosmosV6', JSON.stringify(db));
         closeModal('add');
         render();
-        // Re-open view if editing
         if(document.getElementById('form-header').innerText.includes("Edit")) openView(newP.id);
     };
 
